@@ -4,7 +4,7 @@ This module provides a connector class to interact with Postgres database servic
 
 Usage:
     >>> from database.postgres_connector import PostgresConnector
-    >>> with PostgresConnector(user, password, database, host) as pg:
+    >>> with PostgresConnector('user', 'password', 'database', 'host') as pg:
     >>>     pg.execute_statement("SOME SQL QUERY")
 """
 

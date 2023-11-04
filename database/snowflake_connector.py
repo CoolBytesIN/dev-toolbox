@@ -4,7 +4,7 @@ This module provides a connector class to interact with Snowflake database servi
 
 Usage:
     >>> from database.snowflake_connector import SnowflakeConnector
-    >>> with SnowflakeConnector(user, password, database, schema, account) as sf:
+    >>> with SnowflakeConnector('user', 'password', 'database', 'schema', 'account') as sf:
     >>>     sf.execute_statement("SOME SQL QUERY")
 """
 

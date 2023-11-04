@@ -5,6 +5,7 @@ This module provides an abstract class for database connector classes.
 
 from abc import ABC, abstractmethod
 
+
 class DBConnector(ABC):
     """DBConnector Abstract Class
     """

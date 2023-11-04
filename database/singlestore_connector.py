@@ -4,7 +4,7 @@ This module provides a connector class to interact with Singlestore database ser
 
 Usage:
     >>> from database.singlestore_connector import SingleStoreConnector
-    >>> with SingleStoreConnector(user, password, database, host) as s2:
+    >>> with SingleStoreConnector('user', 'password', 'database', 'host') as s2:
     >>>     s2.execute_statement("SOME SQL QUERY")
 """
 
@@ -15,7 +15,7 @@ from database.db_helpers import get_result_set_as_dict
 
 
 class SingleStoreConnector(DBConnector):
-    """Singlestore DBConnector class
+    """SingleStore DBConnector class
     """
 
     def __init__(self, user, password, database, host, port="3306"):
