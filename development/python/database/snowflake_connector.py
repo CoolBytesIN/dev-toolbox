@@ -3,15 +3,15 @@
 This module provides a connector class to interact with Snowflake database service.
 
 Usage:
-    >>> from database.snowflake_connector import SnowflakeConnector
+    >>> from development.python.database import SnowflakeConnector
     >>> with SnowflakeConnector('user', 'password', 'database', 'schema', 'account') as sf:
     >>>     sf.execute_statement("SOME SQL QUERY")
 """
 
 from snowflake.connector import connect
 
-from database.db_connector import DBConnector
-from database.db_helpers import get_result_set_as_dict
+from development.python.database.db_connector import DBConnector
+from development.python.database.db_helpers import get_result_set_as_dict
 
 
 class SnowflakeConnector(DBConnector):

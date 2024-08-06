@@ -1,32 +1,33 @@
-"""singlestore_connector.py
+"""postgres_connector.py
 
-This module provides a connector class to interact with Singlestore database service.
+This module provides a connector class to interact with Postgres database service.
 
 Usage:
-    >>> from database.singlestore_connector import SingleStoreConnector
-    >>> with SingleStoreConnector('user', 'password', 'database', 'host') as s2:
-    >>>     s2.execute_statement("SOME SQL QUERY")
+    >>> from development.python.database import PostgresConnector
+    >>> with PostgresConnector('user', 'password', 'database', 'host') as pg:
+    >>>     pg.execute_statement("SOME SQL QUERY")
 """
 
-from singlestoredb import connect
+import psycopg2
+from psycopg2 import extensions
 
-from database.db_connector import DBConnector
-from database.db_helpers import get_result_set_as_dict
+from development.python.database.db_connector import DBConnector
+from development.python.database.db_helpers import get_result_set_as_dict
 
 
-class SingleStoreConnector(DBConnector):
-    """SingleStore DBConnector class
+class PostgresConnector(DBConnector):
+    """PostGreSQL DBConnector class
     """
 
-    def __init__(self, user, password, database, host, port="3306"):
-        """Constructor for SingleStoreConnector class.
+    def __init__(self, user, password, database, host, port="5432"):
+        """Constructor for PostgresConnector class.
 
         Args:
             user (str): Database user.
             password (str): Database user's password.
             database (str): Database name.
             host (str): Host address.
-            port (str, optional): Database service port. Defaults to "3306".
+            port (str, optional): Database service port. Defaults to "5432".
         """
         self._user = user
         self._password = password
@@ -43,13 +44,15 @@ class SingleStoreConnector(DBConnector):
             obj: Database connection object.
         """
         if self._conn is None:
-            self._conn = connect(
+            self._conn = psycopg2.connect(
                 user=self._user,
                 password=self._password,
                 database=self._database,
                 host=self._host,
-                port=self._port,
+                port=self._port
             )
+            # By default, psycopg2 statements aren't auto-committing
+            self._conn.set_isolation_level(extensions.ISOLATION_LEVEL_AUTOCOMMIT)
         return self._conn
 
     def close_connection(self):
