@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fictional School">
+    <meta name="theme-color" content="#06233d" id="themeColorMeta">
+
+    <title>Fictional School</title>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico'" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <link rel="stylesheet" href="/css/fonts.min.css" type="text/css" />
+    <link rel="stylesheet" href="/css/navbar.min.cs" type="text/css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="wide-container nav-container">
+        <!-- Brand Logo -->
+        <a href="https://example.com/" class="nav-brand" aria-label="Home">
+          <img src="/logo.webp" alt="" />
+          <span>Fictional School</span>
+        </a>
+
+        <!-- Navbar Items -->
+        <div class="hidden md-flex space-x-1">
+          <div class="nav-item-container">
+            <span class="nav-item">ABOUT</span>
+            <!-- Navbar About submenu -->
+            <div class="nav-submenu-container">
+              <div class="nav-submenu">
+                <a href="#" class="nav-submenu-item" aria-label="About">About School</a>
+                <a href="#" class="nav-submenu-item" aria-label="Story">Our Story</a>
+                <a href="#" class="nav-submenu-item" aria-label="Approach">Our Approach</a>
+                <a href="#" class="nav-submenu-item" aria-label="Directors">Directors</a>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item-container">
+            <a href="#" class="nav-item" aria-label="Academics">ACADEMICS</a>
+          </div>
+          <div class="nav-item-container">
+            <a href="#" class="nav-item" aria-label="Blog">BLOG</a>
+          </div>
+          <div class="nav-item-container">
+            <a href="#" class="nav-item" aria-label="Events">EVENTS</a>
+          </div>
+          <div class="nav-item-container space-y-2">
+            <span class="nav-item">CONTACT</span>
+            <!-- Navbar Contact submenu -->
+            <div class="nav-submenu-container">
+              <div class="nav-submenu">
+                <a href="#" class="nav-submenu-item" aria-label="Contact">Contact us</a>
+                <a href="#" class="nav-submenu-item" aria-label="Enquiry">Enquire now</a>
+                <a href="#" class="nav-submenu-item" aria-label="Careers">Careers</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hamburger Menu for Mobile -->
+        <div class="md-hidden">
+          <svg id="ham-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path id="ham-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6h16M4 12h16M4 18h16"></path>
+            <path id="close-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="md-hidden">
+        <div class="mobile-item-container">
+          <span class="mobile-nav-item">
+            <span class="mobile-nav-item-header">ABOUT</span>
+            <div class="mobile-nav-submenu">
+              <a href="#" class="nav-submenu-item" aria-label="About">About School</a>
+              <a href="#" class="nav-submenu-item" aria-label="Story">Our Story</a>
+              <a href="#" class="nav-submenu-item" aria-label="Approach">Our Approach</a>
+              <a href="#" class="nav-submenu-item" aria-label="Directors">Directors</a>
+            </div>
+          </span>
+          <a href="#" class="mobile-nav-item" aria-label="Academics">ACADEMICS</a>
+          <a href="#" class="mobile-nav-item" aria-label="Blog">BLOG</a>
+          <a href="#" class="mobile-nav-item" aria-label="Events">EVENTS</a>
+          <span class="mobile-nav-item">
+            <span class="mobile-nav-item-header">CONTACT</span>
+            <div class="mobile-nav-submenu">
+              <a href="#" class="nav-submenu-item" aria-label="Contact">Contact us</a>
+              <a href="#" class="nav-submenu-item" aria-label="Enquiry">Enquire now</a>
+              <a href="#" class="nav-submenu-item" aria-label="Careers">Careers</a>
+            </div>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Scroll Top Button -->
+    <button id="scrollToTopBtn" title="Go to top">↑</button>
+
+    <!-- Container for main body -->
+    <div id="root">
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="social-container">
+          <a class="social fb" href="https://www.facebook.com/FictionalSchool" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+          <a class="social tw" href="https://twitter.com/FictionalSchool" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
+          <a class="social yt" href="https://www.youtube.com/channel/FictionalSchool" aria-label="YouTube"><i class="fa fa-youtube-play"></i></a>
+          <a class="social ins" href="https://www.instagram.com/accounts/login/?next=/FictionalSchool/" aria-label="Instagram"><i class="fa fa-instagram"></i></a>
+        </div>
+        © 2023-2024  Fictional School
+      </div>
+    </div>
+
+    <script src="/js/navbar.min.js"></script>
+    <!-- Needed for FontAwesome Icons -->
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+
+  </body>
+</html>
