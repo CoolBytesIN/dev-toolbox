@@ -8,11 +8,10 @@ Usage:
     >>>     pg.execute_statement("SOME SQL QUERY")
 """
 
-import psycopg2
-from psycopg2 import extensions
+from psycopg2 import connect
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from development.python.database.db_connector import DBConnector
-from development.python.database.db_helpers import get_result_set_as_dict
 
 
 class PostgresConnector(DBConnector):
@@ -37,49 +36,18 @@ class PostgresConnector(DBConnector):
         self._conn = None
 
     @property
-    def get_connection(self):
-        """Property to get database connection object.
-
-        Returns:
-            obj: Database connection object.
+    def __get_connection__(self):
+        """Method to get a database connection object
         """
         if self._conn is None:
-            self._conn = psycopg2.connect(
+            self._conn = connect(
                 user=self._user,
                 password=self._password,
                 database=self._database,
                 host=self._host,
                 port=self._port
             )
+            
             # By default, psycopg2 statements aren't auto-committing
-            self._conn.set_isolation_level(extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+            self._conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         return self._conn
-
-    def close_connection(self):
-        """Method to close database connection.
-        """
-        self.get_connection.close()
-
-    def execute_statement(self, sql):
-        """Method to execute SQL statements that don't return any result-set.
-        Examples: INSERT, DELETE etc.
-
-        Args:
-            sql (str): SQL query to be executed.
-        """
-        with self.get_connection.cursor() as cur:
-            cur.execute(sql)
-
-    def query_records_as_dict(self, sql):
-        """Method to execute SQL statements that return a result-set.
-        The result-set is returned as a list of dictionaries.
-
-        Args:
-            sql (str): SQL query to be executed.
-
-        Returns:
-            list: List of database records (each record a dict).
-        """
-        with self.get_connection.cursor() as cur:
-            cur.execute(sql)
-            return get_result_set_as_dict(cur.description, cur.fetchall())
