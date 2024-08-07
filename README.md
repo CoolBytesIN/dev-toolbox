@@ -1,11 +1,11 @@
 # 🛠️ Toolbox for Developers
-Re-usable developer assets for Work
+Re-usable developer tools for Work
 
 ---
 
 ## Categories
 
-The package is categorized into 5 types:
+The package is categorized into following:
 
 * **Development**
   * Includes code snippets and models, implemented in various programming languages.
@@ -20,4 +20,4 @@ The package is categorized into 5 types:
 
 ---
 
-For suggestions & improvements, [contact Me](mailto:admin@coolbytes.in)
+For suggestions & improvements, [contact me](mailto:admin@coolbytes.in).
