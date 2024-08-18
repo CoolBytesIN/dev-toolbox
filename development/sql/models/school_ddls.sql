@@ -1,4 +1,4 @@
-/* Table for all academic years info (Standalone) */
+/* Table for all academic years info */
 CREATE TABLE public.academic_years (
 	academic_year_id VARCHAR(10) NOT NULL PRIMARY KEY,
 	start_date DATE NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE public.academic_years (
 );
 
 
-/* Table for all schools info (Standalone) */
+/* Table for all schools info */
 CREATE TABLE public.schools (
 	school_id SERIAL PRIMARY KEY,
 	school_name VARCHAR(30) NOT NULL,
@@ -21,10 +21,11 @@ CREATE TABLE public.schools (
 CREATE TABLE public.classes (
 	class_id SERIAL PRIMARY KEY,
 	class_name VARCHAR(50) NOT NULL,
+	class_desc VARCHAR(255),
 	school_id INT NOT NULL,
 	
+	-- INFO: A class is generally mapped to a school (even though the name may repeat across schools), hence these constraints.
 	UNIQUE (class_name, school_id),
-	-- INFO: A class is generally mapped to a school (even though the name may repeat across schools), hence this constraint.
 	FOREIGN KEY (school_id) REFERENCES public.schools(school_id)
 );
 
@@ -33,11 +34,11 @@ CREATE TABLE public.classes (
 CREATE TABLE public.sections (
 	section_id SERIAL PRIMARY KEY,
 	section_name VARCHAR(10) NOT NULL,
+	section_desc VARCHAR(255),
 	class_id INT NOT NULL,
-	is_active BOOLEAN,
 	
+	-- INFO: A section is generally mapped to a class (even though the name may repeat across classes), hence these constraints.
 	UNIQUE (section_name, class_id),
-	-- INFO: A section is generally mapped to a class (even though the name may repeat across classes), hence this constraint.
 	FOREIGN KEY (class_id) REFERENCES public.classes(class_id)
 );
 
@@ -49,39 +50,40 @@ CREATE TABLE public.subjects (
 );
 
 
-/* Table for all students info (Standalone) */
+/* Table to contain all students info */
 CREATE TABLE public.students (
 	student_id VARCHAR(20) NOT NULL PRIMARY KEY,
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50),
 	date_of_birth DATE,
-	gender VARCHAR(10) CHECK(gender in ('Male', 'Female', 'Other')),
+	gender VARCHAR(10) CHECK(gender IN ('Male', 'Female', 'Other')),
 	aadhaar_no CHAR(12) CHECK(aadhaar_no ~ '^[0-9]{12}$'),
+	parent_aadhaar_no CHAR(12) CHECK(parent_aadhaar_no ~ '^[0-9]{12}$'),
 	parent_phone_no CHAR(10) CHECK(parent_phone_no ~ '^[0-9]{10}$'),
-	parent_aadhaar_no CHAR(12) CHECK(parent_aadhaar_no ~ '^[0-9]{12}$')
+	house_name VARCHAR(255)
 );
 
 
 
-/* Table for all student enrollments info */
+/* Table to contain all student enrollments info */
 CREATE TABLE public.student_enrollments (
 	enrollment_id VARCHAR(20) NOT NULL,
 	student_id VARCHAR(20) NOT NULL,
-	admission_time TIMESTAMP NOT NULL, 
-	exit_time TIMESTAMP,
-	-- INFO: Check constraint for is_active to be FALSE, when exit_time is NOT NULL
-	is_active BOOLEAN CHECK(is_active = CASE WHEN exit_time IS NOT NULL THEN FALSE ELSE TRUE END),
+	admission_date DATE NOT NULL, 
+	exit_date DATE,
+	-- INFO: Check constraint for is_active to be False, when exit_date is NOT NULL
+	is_active BOOLEAN CHECK(is_active = CASE WHEN exit_date IS NOT NULL THEN FALSE ELSE TRUE END),
 	school_id INT NOT NULL, 
 	
-  PRIMARY KEY (enrollment_id, admission_time),
+  PRIMARY KEY (enrollment_id, admission_date),
 	FOREIGN KEY (student_id) REFERENCES public.students(student_id),
 	FOREIGN KEY (school_id) REFERENCES public.schools(school_id)
 );
 
 
-/* Table for all students roll number info */
-CREATE TABLE public.student_roll_numbers (
-	roll_no_id SERIAL PRIMARY KEY,
+/* Table to contain student's placement within a specific academic structure, such as sections or classes, during an academic year. */
+CREATE TABLE public.student_academic_records (
+	academic_record_id SERIAL PRIMARY KEY,
 	student_id VARCHAR(20) NOT NULL,
 	roll_no VARCHAR(10) NOT NULL,
 	academic_year_id VARCHAR(10) NOT NULL,
@@ -98,42 +100,104 @@ CREATE TABLE public.student_roll_numbers (
 );
 
 
-/* Table for all exams info */
+/* Table to contain all exam types - IIT, Olympiad etc. */
+CREATE TABLE public.exam_categories (
+--	exam_category_id SERIAL PRIMARY KEY,
+	exam_category_name VARCHAR(50) PRIMARY KEY
+--	UNIQUE (exam_category_name)
+);
+
+
+/* Table to contain all exam set types - Set A, Set B etc. */
+CREATE TABLE public.exam_sets (
+--	exam_set_id SERIAL PRIMARY KEY,
+	exam_set_name VARCHAR(50) PRIMARY KEY
+--	UNIQUE (exam_set_name)
+);
+
+
+/* Table to contain all exams info */
 CREATE TABLE public.exams (
-	exam_id INT NOT NULL PRIMARY KEY,
-	exam_name VARCHAR(100) NOT NULL,
-	exam_type VARCHAR(70) NOT NULL,
-	exam_description VARCHAR(255),
-	exam_date DATE NOT NULL,
-	academic_year_id VARCHAR(10) NOT NULL,
-	status VARCHAR(10) DEFAULT 'Scheduled' CHECK(status in ('Scheduled', 'Completed', 'Cancelled')),
+	exam_id SERIAL PRIMARY KEY,
+	exam_name VARCHAR(50) NOT NULL,
+	exam_desc VARCHAR(255),
+	exam_category_name VARCHAR(50) NOT NULL,
 	
+	FOREIGN KEY (exam_category_name) REFERENCES public.exam_categories(exam_category_name)
+);
+
+/* Table to contain all syllabus info */
+CREATE TABLE public.exam_syllabus (
+	syllabus_id SERIAL PRIMARY KEY,
+	scheduled_date DATE NOT NULL,
+	exam_set_name VARCHAR(50) NOT NULL,
+	subject_id INT NOT NULL,
+	section_id INT NOT NULL,
+	subject_syllabus TEXT,
+	session_number INT NOT NULL,
+	status VARCHAR(20) NOT NULL CHECK(status IN ('Scheduled', 'Conducted', 'Awaiting Results', 'Published', 'Cancelled')),
+	total_marks NUMERIC(6, 2) NOT NULL,
+	
+	UNIQUE (scheduled_date, exam_set_name, subject_id, section_id),
+	FOREIGN KEY (exam_set_name) REFERENCES public.exam_sets(exam_set_name),
+	FOREIGN KEY (subject_id) REFERENCES public.subjects(subject_id),
+	FOREIGN KEY (section_id) REFERENCES public.sections(section_id)
+);
+
+
+/* Table to contain all teachers info */
+CREATE TABLE public.teachers (
+	teacher_id VARCHAR(20) NOT NULL PRIMARY KEY,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50),
+	date_of_birth DATE,
+	gender VARCHAR(10) CHECK(gender IN ('Male', 'Female', 'Other')),
+	aadhaar_no CHAR(12) CHECK(aadhaar_no ~ '^[0-9]{12}$'),
+	phone_no CHAR(10) CHECK(phone_no ~ '^[0-9]{10}$'),
+	email_id VARCHAR(255) CHECK(email_id ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+);
+
+
+/* Table to contain all teacher enrollments info */
+CREATE TABLE public.teacher_enrollments (
+	enrollment_id VARCHAR(20) NOT NULL,
+	teacher_id VARCHAR(20) NOT NULL,
+	hire_date DATE NOT NULL, 
+	exit_date DATE,
+	-- INFO: Check constraint for is_active to be False, when exit_date is NOT NULL
+	is_active BOOLEAN CHECK(is_active = CASE WHEN exit_date IS NOT NULL THEN FALSE ELSE TRUE END),
+	school_id INT NOT NULL, 
+	
+  PRIMARY KEY (enrollment_id, hire_date),
+	FOREIGN KEY (teacher_id) REFERENCES public.teachers(teacher_id),
+	FOREIGN KEY (school_id) REFERENCES public.schools(school_id)
+);
+
+
+/* Table to contain all teacher placements info */
+CREATE TABLE public.teacher_placements (
+	teacher_placement_id SERIAL PRIMARY KEY,
+	teacher_id VARCHAR(20) NOT NULL,
+	subject_id INT NOT NULL,
+	section_id INT NOT NULL,
+	academic_year_id VARCHAR(10) NOT NULL,
+	
+	UNIQUE (teacher_id, subject_id, section_id, academic_year_id),
+	FOREIGN KEY (teacher_id) REFERENCES public.teachers(teacher_id),
+	FOREIGN KEY (subject_id) REFERENCES public.subjects(subject_id),
+	FOREIGN KEY (section_id) REFERENCES public.sections(section_id),
 	FOREIGN KEY (academic_year_id) REFERENCES public.academic_years(academic_year_id)
 );
 
 
-/* Table for all exam subjects info */
-CREATE TABLE public.exam_subjects (
-	exam_subject_id SERIAL PRIMARY KEY,
-	exam_id  INT NOT NULL,
-	subject_id INT NOT NULL,
-	total_marks NUMERIC(6, 2) NOT NULL,
-
-	UNIQUE (exam_id, subject_id),
-	FOREIGN KEY (exam_id) REFERENCES public.exams(exam_id),
-	FOREIGN KEY (subject_id) REFERENCES public.subjects(subject_id)
-);
-
-
-/* Table for all student marks info */
-CREATE TABLE public.student_marks (
-	-- INFO: App should take care of inserting this ID, based on roll_no and revoked_time
-	roll_no_id INT NOT NULL,
-	-- INFO: App should take care of inserting this ID, based on exam_id and subject_id
-	exam_subject_id INT NOT NULL,
+/* Table to contain all student marks info */
+CREATE TABLE public.exam_results (
+	academic_record_id INT NOT NULL,
+	syllabus_id INT NOT NULL,
 	marks_obtained NUMERIC(6, 2) NOT NULL,
+	exam_date DATE NOT NULL,
 	
-	PRIMARY KEY (roll_no_id, exam_subject_id),
-	FOREIGN KEY (roll_no_id) REFERENCES public.student_roll_numbers(roll_no_id),
-	FOREIGN KEY (exam_subject_id) REFERENCES public.exam_subjects(exam_subject_id)
+	PRIMARY KEY (academic_record_id, syllabus_id),
+	FOREIGN KEY (academic_record_id) REFERENCES public.student_academic_records(academic_record_id),
+	FOREIGN KEY (syllabus_id) REFERENCES public.exam_syllabus(syllabus_id)
 );

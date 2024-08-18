@@ -3,12 +3,12 @@
 This module provides a connector class to interact with Snowflake database service.
 
 Usage:
-    >>> from development.python.database import SnowflakeConnector
+    >>> from development.python.database.snowflake_connector import SnowflakeConnector
     >>> with SnowflakeConnector('user', 'password', 'database', 'schema', 'account') as sf:
     >>>     sf.execute_statement("SOME SQL QUERY")
 """
 
-from snowflake.connector import connect
+from snowflake.connector import connect, DictCursor
 
 from development.python.database.db_connector import DBConnector
 
@@ -47,3 +47,9 @@ class SnowflakeConnector(DBConnector):
                 account=self._account,
             )
         return self._conn
+
+    @property
+    def __get_cursor__(self):
+        """Method to get a database cursor object
+        """
+        return self.__get_connection__.cursor(DictCursor)

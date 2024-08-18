@@ -21,6 +21,13 @@ class DBConnector(ABC):
         """
         pass
 
+    @property
+    @abstractmethod
+    def __get_cursor__(self):
+        """To be implemented in subclass. This should return a database cursor object.
+        """
+        pass
+
     def __close_connection__(self):
         """Method to terminate the database connection.
         """
@@ -32,9 +39,25 @@ class DBConnector(ABC):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Safely terminate the database connection, in case of failures.
+        """Safely terminate the database connection, with enhanced exception handling.
+    
+        Args:
+            exc_type (type): The type of the exception.
+            exc_value (Exception): The exception instance.
+            traceback (traceback): Traceback object with exception details.
+            
+        Returns:
+            bool: False if an exception occurred, allowing the exception to propagate.
+                True if no exception occurred, suppressing any further propagation.
         """
-        self.__close_connection__()
+        try:
+            if exc_type is not None:
+                logger.error(f"An exception occurred: {exc_value}", exc_info=(exc_type, exc_value, traceback))
+            self.__close_connection__()
+        except Exception as e:
+            logger.error(f"Failed to close database connection: {e}", exc_info=True)
+            return False
+        
         return exc_type is None
     
     def execute_statement(self, sql, bind_vars=None):
@@ -45,11 +68,11 @@ class DBConnector(ABC):
             sql (str): SQL query to be executed.
             bind_vars (tuple): Bind variables for the SQL Query.
         """
-        with self.__get_connection__.cursor() as cur:
+        with self.__get_cursor__ as cur:
             logger.info(f"SQL query about to be executed: {sql}")
             cur.execute(sql, bind_vars)
 
-    def query_records_as_dict(self, sql, bind_vars=None):
+    def query_dict_records(self, sql, bind_vars=None):
         """Method to execute SQL statements that return a result-set.
         The result-set is returned as a list of dictionaries.
 
@@ -60,7 +83,7 @@ class DBConnector(ABC):
         Returns:
             list: List of database records (each record a dict).
         """
-        with self.__get_connection__.cursor() as cur:
+        with self.__get_cursor__ as cur:
             logger.info(f"SQL query about to be executed: {sql}")
             cur.execute(sql, bind_vars)
-            return [dict(zip([column[0] for column in cur.description], record)) for record in cur.fetchall()]
+            return cur.fetchall()

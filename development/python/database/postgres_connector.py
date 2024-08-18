@@ -3,13 +3,14 @@
 This module provides a connector class to interact with Postgres database service.
 
 Usage:
-    >>> from development.python.database import PostgresConnector
+    >>> from development.python.database.postgres_connector import PostgresConnector
     >>> with PostgresConnector('user', 'password', 'database', 'host') as pg:
     >>>     pg.execute_statement("SOME SQL QUERY")
 """
 
 from psycopg2 import connect
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2.extras import RealDictCursor
 
 from development.python.database.db_connector import DBConnector
 
@@ -51,3 +52,9 @@ class PostgresConnector(DBConnector):
             # By default, psycopg2 statements aren't auto-committing
             self._conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         return self._conn
+
+    @property
+    def __get_cursor__(self):
+        """Method to get a database cursor object
+        """
+        return self.__get_connection__.cursor(cursor_factory=RealDictCursor)
